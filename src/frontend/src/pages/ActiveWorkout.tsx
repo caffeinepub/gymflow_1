@@ -11,6 +11,7 @@ import { useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
   ArrowRight,
+  BookMarked,
   CheckCircle2,
   Loader2,
   Plus,
@@ -64,6 +65,10 @@ export function ActiveWorkout() {
     "gymflow_logs",
     [],
   );
+  const [customExercises, setCustomExercises] = useLocalStorage<
+    ExerciseOption[]
+  >("gymflow_custom_exercises", []);
+
   const logMutation = useLogWorkout();
 
   const exercises = activeWorkout?.exercises ?? [];
@@ -72,12 +77,28 @@ export function ActiveWorkout() {
   const dayType = activeWorkout?.dayType ?? "kracht";
 
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [workoutState, setWorkoutState] = useState<WorkoutState>(() => ({
-    sets: Object.fromEntries(
-      exercises.map((_, i) => [i, [{ id: newSetId(), weight: "", reps: "" }]]),
-    ),
-    activeExercises: [...exercises],
-  }));
+  const [workoutState, setWorkoutState] = useState<WorkoutState>(() => {
+    const setsMap = Object.fromEntries(
+      exercises.map((exercise, i) => {
+        const prev = getPrevSessionData(localLogs, exercise.id);
+        if (prev && prev.length > 0) {
+          return [
+            i,
+            prev.map((s) => ({
+              id: newSetId(),
+              weight: String(s.weight),
+              reps: String(s.reps),
+            })),
+          ];
+        }
+        return [i, [{ id: newSetId(), weight: "", reps: "" }]];
+      }),
+    );
+    return {
+      sets: setsMap,
+      activeExercises: [...exercises],
+    };
+  });
   const [showAltDialog, setShowAltDialog] = useState(false);
   const [done, setDone] = useState(false);
   const [manualName, setManualName] = useState("");
@@ -151,14 +172,23 @@ export function ActiveWorkout() {
   const addManualExercise = useCallback(() => {
     const trimmed = manualName.trim();
     if (!trimmed) return;
-    swapExercise({
-      id: 9999,
+    const newExercise: ExerciseOption = {
+      id: Date.now(),
       name: trimmed,
       equipment: "Handmatig",
       muscleGroup: "Handmatig",
+    };
+    // Persist to custom exercises list, deduplicate by name
+    setCustomExercises((prev) => {
+      const exists = prev.some(
+        (e) => e.name.toLowerCase() === trimmed.toLowerCase(),
+      );
+      if (exists) return prev;
+      return [...prev, newExercise];
     });
+    swapExercise(newExercise);
     setManualName("");
-  }, [manualName, swapExercise]);
+  }, [manualName, swapExercise, setCustomExercises]);
 
   async function finishWorkout() {
     const today = new Date().toISOString().split("T")[0];
@@ -316,7 +346,7 @@ export function ActiveWorkout() {
               {prevSets && prevSets.length > 0 && (
                 <div className="mt-3 pt-3 border-t border-border">
                   <p className="text-xs text-muted-foreground mb-1">
-                    Vorige sessie:
+                    Laatste sessie (vooraf ingevuld):
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {prevSets.slice(0, 4).map((s, i) => (
@@ -451,7 +481,7 @@ export function ActiveWorkout() {
         }}
       >
         <DialogContent
-          className="bg-card border-border"
+          className="bg-card border-border max-h-[85vh] overflow-y-auto"
           data-ocid="workout.dialog"
         >
           <DialogHeader>
@@ -495,6 +525,41 @@ export function ActiveWorkout() {
                 </Badge>
               </button>
             ))}
+
+            {/* Previously saved custom exercises */}
+            {customExercises.length > 0 && (
+              <div className="pt-2">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="text-xs text-muted-foreground px-2 flex items-center gap-1">
+                    <BookMarked size={11} /> Eerder handmatig toegevoegd
+                  </span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
+                {customExercises.map((ex, i) => (
+                  <button
+                    type="button"
+                    key={ex.id}
+                    onClick={() => swapExercise(ex)}
+                    className="w-full flex items-center gap-3 p-3 rounded-xl border border-primary/20 hover:border-primary/50 hover:bg-primary/5 transition-colors text-left mb-2"
+                    data-ocid={`workout.custom_exercise_button.${i + 1}`}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-foreground">{ex.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        Handmatig · Opgeslagen
+                      </p>
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className="text-xs shrink-0 border-primary/40 text-primary"
+                    >
+                      Eigen
+                    </Badge>
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Manual input section */}
             <div className="pt-3">

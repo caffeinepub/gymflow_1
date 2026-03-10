@@ -244,30 +244,30 @@ export function Vandaag() {
             Oefeningen — {activeExercises.length} exercises
           </p>
           <div className="space-y-3 mb-6">
-            {activeExercises.map((ex, i) => (
+            {activeExercises.map((ex, pos) => (
               <motion.div
-                key={`${ex.id}-${i}`}
+                key={`${ex?.id}-${pos}`}
                 initial={{ opacity: 0, x: -16 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 + i * 0.07 }}
+                transition={{ delay: 0.1 + pos * 0.07 }}
               >
                 <Card
                   className="border-border bg-card"
-                  data-ocid={`vandaag.item.${i + 1}`}
+                  data-ocid={`vandaag.item.${pos + 1}`}
                 >
                   <CardContent className="flex items-center gap-3 px-4 py-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0 text-primary font-display font-bold text-sm">
-                      {i + 1}
+                    <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0 text-primary font-display font-bold text-xs">
+                      {pos + 1}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-foreground truncate">
-                        {ex.name}
+                        {ex?.name}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {ex.muscleGroup}
+                        {ex?.muscleGroup}
                       </p>
                     </div>
-                    <EquipmentBadge equipment={ex.equipment} />
+                    <EquipmentBadge equipment={ex?.equipment ?? ""} />
                   </CardContent>
                 </Card>
               </motion.div>
