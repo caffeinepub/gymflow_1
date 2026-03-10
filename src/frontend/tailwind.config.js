@@ -16,9 +16,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Bricolage Grotesque", "sans-serif"],
-        body: ["Sora", "sans-serif"],
-        sans: ["Sora", "sans-serif"],
+        display: ["Mona Sans", "sans-serif"],
+        body: ["Outfit", "sans-serif"],
+        sans: ["Outfit", "sans-serif"],
       },
       colors: {
         border: "oklch(var(--border))",

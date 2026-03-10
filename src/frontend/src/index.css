@@ -3,18 +3,17 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "Bricolage Grotesque";
-  src: url("/assets/fonts/BricolageGrotesque[opsz,wdth,wght].woff2")
-    format("woff2");
-  font-weight: 100 900;
+  font-family: "Mona Sans";
+  src: url("/assets/fonts/Mona-Sans.woff2") format("woff2");
+  font-weight: 200 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Sora";
-  src: url("/assets/fonts/Sora[wght].woff2") format("woff2");
-  font-weight: 100 800;
+  font-family: "Outfit";
+  src: url("/assets/fonts/Outfit[wght].woff2") format("woff2");
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -73,6 +72,9 @@
   h5,
   h6 {
     @apply font-display;
+    font-variation-settings: "wdth" 125;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
 }
 
