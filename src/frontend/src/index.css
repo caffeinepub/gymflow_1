@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/BricolageGrotesque[opsz,wdth,wght].woff2")
+    format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Sora";
+  src: url("/assets/fonts/Sora[wght].woff2") format("woff2");
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  :root {
+    --background: 0.13 0.004 140;
+    --foreground: 0.94 0.006 140;
+    --card: 0.18 0.006 140;
+    --card-foreground: 0.94 0.006 140;
+    --popover: 0.18 0.006 140;
+    --popover-foreground: 0.94 0.006 140;
+    --primary: 0.72 0.22 140;
+    --primary-foreground: 0.1 0.006 140;
+    --secondary: 0.22 0.008 140;
+    --secondary-foreground: 0.85 0.006 140;
+    --muted: 0.2 0.006 140;
+    --muted-foreground: 0.56 0.012 140;
+    --accent: 0.72 0.22 140;
+    --accent-foreground: 0.1 0.006 140;
+    --destructive: 0.58 0.22 27;
+    --destructive-foreground: 0.95 0.005 27;
+    --border: 0.26 0.01 140;
+    --input: 0.22 0.008 140;
+    --ring: 0.72 0.22 140;
+    --radius: 0.75rem;
+    --chart-1: 0.72 0.22 140;
+    --chart-2: 0.62 0.18 140;
+    --chart-3: 0.52 0.14 140;
+    --chart-4: 0.8 0.2 155;
+    --chart-5: 0.58 0.22 27;
+    --sidebar: 0.15 0.005 140;
+    --sidebar-foreground: 0.94 0.006 140;
+    --sidebar-primary: 0.72 0.22 140;
+    --sidebar-primary-foreground: 0.1 0.006 140;
+    --sidebar-accent: 0.22 0.008 140;
+    --sidebar-accent-foreground: 0.85 0.006 140;
+    --sidebar-border: 0.26 0.01 140;
+    --sidebar-ring: 0.72 0.22 140;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .pb-nav {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  }
+  .glow-primary {
+    box-shadow: 0 0 20px oklch(0.72 0.22 140 / 0.35);
+  }
+  .glow-accent {
+    box-shadow: 0 0 20px oklch(0.72 0.22 140 / 0.25);
+  }
+  .exercise-card-active {
+    border-color: oklch(0.72 0.22 140);
+    box-shadow: 0 0 0 1px oklch(0.72 0.22 140 / 0.4), 0 4px 24px
+      oklch(0.72 0.22 140 / 0.15);
+  }
+}
