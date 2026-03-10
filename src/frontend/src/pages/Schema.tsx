@@ -7,7 +7,9 @@ import {
   DEFAULT_SCHEDULE,
   EXERCISES,
   type ExerciseOption,
+  KRACHT_LABELS,
   type ScheduleDay,
+  getExerciseIdsByKrachtType,
 } from "../data/exercises";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
@@ -156,16 +158,34 @@ export function Schema() {
     "gymflow_day_types",
     {},
   );
+  const [krachtTypeOverrides] = useLocalStorage<Record<number, string>>(
+    "gymflow_kracht_types",
+    {},
+  );
   const [expandedDay, setExpandedDay] = useState<number>(todayIndex);
 
   const schedule = useMemo(() => {
     return DEFAULT_SCHEDULE.map((day) => {
       const overriddenType = dayTypeOverrides[day.dayIndex];
+      const resolvedType = overriddenType ?? day.type;
+
+      if (resolvedType === "kracht") {
+        const krachtType = krachtTypeOverrides[day.dayIndex];
+        if (krachtType) {
+          return {
+            ...day,
+            type: "kracht" as ScheduleDay["type"],
+            label: KRACHT_LABELS[krachtType] ?? day.label,
+            exerciseIds: getExerciseIdsByKrachtType(krachtType),
+          };
+        }
+      }
+
       return overriddenType
         ? { ...day, type: overriddenType as ScheduleDay["type"] }
         : day;
     });
-  }, [dayTypeOverrides]);
+  }, [dayTypeOverrides, krachtTypeOverrides]);
 
   function getExercisesForDay(day: ScheduleDay): ExerciseOption[] {
     return day.exerciseIds.map((id, slotIndex) => {

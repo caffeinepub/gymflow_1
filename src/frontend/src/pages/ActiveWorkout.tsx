@@ -80,6 +80,7 @@ export function ActiveWorkout() {
   }));
   const [showAltDialog, setShowAltDialog] = useState(false);
   const [done, setDone] = useState(false);
+  const [manualName, setManualName] = useState("");
 
   const currentExercise = workoutState.activeExercises[currentIdx];
   const currentSets = workoutState.sets[currentIdx] ?? [];
@@ -146,6 +147,18 @@ export function ActiveWorkout() {
     },
     [currentIdx],
   );
+
+  const addManualExercise = useCallback(() => {
+    const trimmed = manualName.trim();
+    if (!trimmed) return;
+    swapExercise({
+      id: 9999,
+      name: trimmed,
+      equipment: "Handmatig",
+      muscleGroup: "Handmatig",
+    });
+    setManualName("");
+  }, [manualName, swapExercise]);
 
   async function finishWorkout() {
     const today = new Date().toISOString().split("T")[0];
@@ -288,18 +301,16 @@ export function ActiveWorkout() {
                     </span>
                   </div>
                 </div>
-                {alternatives.length > 0 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowAltDialog(true)}
-                    className="shrink-0 text-xs border-primary/40 text-primary hover:bg-primary/10"
-                    data-ocid="workout.secondary_button"
-                  >
-                    <Shuffle size={14} className="mr-1" />
-                    Alternatief
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAltDialog(true)}
+                  className="shrink-0 text-xs border-primary/40 text-primary hover:bg-primary/10"
+                  data-ocid="workout.secondary_button"
+                >
+                  <Shuffle size={14} className="mr-1" />
+                  Alternatief
+                </Button>
               </div>
 
               {prevSets && prevSets.length > 0 && (
@@ -432,7 +443,13 @@ export function ActiveWorkout() {
         )}
       </div>
 
-      <Dialog open={showAltDialog} onOpenChange={setShowAltDialog}>
+      <Dialog
+        open={showAltDialog}
+        onOpenChange={(open) => {
+          setShowAltDialog(open);
+          if (!open) setManualName("");
+        }}
+      >
         <DialogContent
           className="bg-card border-border"
           data-ocid="workout.dialog"
@@ -478,11 +495,46 @@ export function ActiveWorkout() {
                 </Badge>
               </button>
             ))}
+
+            {/* Manual input section */}
+            <div className="pt-3">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-xs text-muted-foreground px-2">
+                  Of handmatig invoeren
+                </span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  type="text"
+                  placeholder="Naam oefening..."
+                  value={manualName}
+                  onChange={(e) => setManualName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") addManualExercise();
+                  }}
+                  className="flex-1 bg-background border-border"
+                  data-ocid="workout.input"
+                />
+                <Button
+                  onClick={addManualExercise}
+                  disabled={!manualName.trim()}
+                  className="shrink-0"
+                  data-ocid="workout.save_button"
+                >
+                  Toevoegen
+                </Button>
+              </div>
+            </div>
           </div>
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setShowAltDialog(false)}
+            onClick={() => {
+              setShowAltDialog(false);
+              setManualName("");
+            }}
             className="mt-1"
             data-ocid="workout.close_button"
           >

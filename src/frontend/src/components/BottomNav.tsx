@@ -1,11 +1,16 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { CalendarDays, Dumbbell, Settings, TrendingUp } from "lucide-react";
+import {
+  CalendarCheck2,
+  CalendarDays,
+  Dumbbell,
+  TrendingUp,
+} from "lucide-react";
 
 const tabs = [
   { to: "/" as const, label: "Vandaag", Icon: Dumbbell },
   { to: "/schema" as const, label: "Schema", Icon: CalendarDays },
+  { to: "/werkschema" as const, label: "Werkschema", Icon: CalendarCheck2 },
   { to: "/voortgang" as const, label: "Voortgang", Icon: TrendingUp },
-  { to: "/instellingen" as const, label: "Instellingen", Icon: Settings },
 ];
 
 export function BottomNav() {
@@ -25,18 +30,16 @@ export function BottomNav() {
             <Link
               key={to}
               to={to}
-              className={`flex flex-1 flex-col items-center justify-center gap-1 text-xs font-body transition-colors min-h-[44px] ${
+              className={`flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-body transition-colors min-h-[44px] ${
                 isActive
                   ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
               }`}
-              data-ocid={`nav.${label.toLowerCase()}.link`}
+              data-ocid={`nav.${label.toLowerCase().replace(/ /g, "_")}.link`}
             >
               <Icon
-                size={22}
-                className={`transition-transform ${
-                  isActive ? "scale-110" : ""
-                }`}
+                size={20}
+                className={`transition-transform ${isActive ? "scale-110" : ""}`}
                 strokeWidth={isActive ? 2.5 : 1.8}
               />
               <span className="font-medium tracking-wide">{label}</span>

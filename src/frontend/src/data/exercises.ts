@@ -401,3 +401,20 @@ export const MUSCLE_GROUP_COLORS: Record<string, string> = {
   Conditie: "#34d399",
   "Schouders/Rug": "#38bdf8",
 };
+
+// ── Werkschema kracht-type helpers ────────────────────────────────────────
+
+export const KRACHT_LABELS: Record<string, string> = {
+  push: "Push",
+  pull: "Pull",
+  legs: "Benen & Billen",
+  upper: "Upper Body",
+  lower: "Lower Body",
+};
+
+export function getExerciseIdsByKrachtType(krachtType: string): number[] {
+  const cat = krachtType === "lower" ? "legs" : krachtType;
+  return Object.values(EXERCISES)
+    .filter((ex) => ex.category === cat)
+    .map((ex) => ex.id);
+}

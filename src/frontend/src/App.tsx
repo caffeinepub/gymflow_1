@@ -12,10 +12,10 @@ import { BottomNav } from "./components/BottomNav";
 import { WorkoutProvider } from "./contexts/WorkoutContext";
 import { useActor } from "./hooks/useActor";
 import { ActiveWorkout } from "./pages/ActiveWorkout";
-import { Instellingen } from "./pages/Instellingen";
 import { Schema } from "./pages/Schema";
 import { Vandaag } from "./pages/Vandaag";
 import { Voortgang } from "./pages/Voortgang";
+import { Werkschema } from "./pages/Werkschema";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
@@ -47,7 +47,6 @@ const rootRoute = createRootRoute({
   component: () => <Outlet />,
 });
 
-// Pathless layout route for main pages (with BottomNav)
 const mainLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "main",
@@ -72,13 +71,12 @@ const voortgangRoute = createRoute({
   component: Voortgang,
 });
 
-const instellingenRoute = createRoute({
+const werkschemaRoute = createRoute({
   getParentRoute: () => mainLayoutRoute,
-  path: "/instellingen",
-  component: Instellingen,
+  path: "/werkschema",
+  component: Werkschema,
 });
 
-// Workout page — no BottomNav, full screen
 const workoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/workout",
@@ -90,7 +88,7 @@ const routeTree = rootRoute.addChildren([
     indexRoute,
     schemaRoute,
     voortgangRoute,
-    instellingenRoute,
+    werkschemaRoute,
   ]),
   workoutRoute,
 ]);
