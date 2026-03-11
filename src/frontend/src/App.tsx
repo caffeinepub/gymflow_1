@@ -8,10 +8,11 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { BottomNav } from "./components/BottomNav";
+import { SideNav } from "./components/SideNav";
 import { WorkoutProvider } from "./contexts/WorkoutContext";
 import { useActor } from "./hooks/useActor";
 import { ActiveWorkout } from "./pages/ActiveWorkout";
+import { Geschiedenis } from "./pages/Geschiedenis";
 import { Schema } from "./pages/Schema";
 import { Vandaag } from "./pages/Vandaag";
 import { Voortgang } from "./pages/Voortgang";
@@ -35,10 +36,10 @@ function AppLayout() {
   return (
     <div className="min-h-screen bg-background">
       <RegisterEffect />
-      <main className="pb-nav">
+      <SideNav />
+      <main className="ml-[72px] md:ml-[200px] min-w-0">
         <Outlet />
       </main>
-      <BottomNav />
     </div>
   );
 }
@@ -77,6 +78,12 @@ const werkschemaRoute = createRoute({
   component: Werkschema,
 });
 
+const geschiedenisRoute = createRoute({
+  getParentRoute: () => mainLayoutRoute,
+  path: "/geschiedenis",
+  component: Geschiedenis,
+});
+
 const workoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/workout",
@@ -89,6 +96,7 @@ const routeTree = rootRoute.addChildren([
     schemaRoute,
     voortgangRoute,
     werkschemaRoute,
+    geschiedenisRoute,
   ]),
   workoutRoute,
 ]);

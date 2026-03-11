@@ -22,7 +22,7 @@ export function BottomNav() {
       className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
-      <div className="flex items-stretch h-16">
+      <div className="flex items-stretch h-16 px-2">
         {tabs.map(({ to, label, Icon }) => {
           const isActive =
             to === "/" ? currentPath === "/" : currentPath.startsWith(to);
@@ -30,19 +30,27 @@ export function BottomNav() {
             <Link
               key={to}
               to={to}
-              className={`flex flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-body transition-colors min-h-[44px] ${
-                isActive
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              className="flex flex-1 flex-col items-center justify-center gap-0.5 min-h-[44px] relative"
               data-ocid={`nav.${label.toLowerCase().replace(/ /g, "_")}.link`}
             >
-              <Icon
-                size={20}
-                className={`transition-transform ${isActive ? "scale-110" : ""}`}
-                strokeWidth={isActive ? 2.5 : 1.8}
-              />
-              <span className="font-medium tracking-wide">{label}</span>
+              <div
+                className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 ${
+                  isActive
+                    ? "bg-primary text-primary-foreground glow-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                }`}
+              >
+                <Icon
+                  size={20}
+                  className="transition-transform"
+                  strokeWidth={isActive ? 2.5 : 1.8}
+                />
+                <span
+                  className={`text-[10px] font-medium tracking-wide ${isActive ? "font-bold" : ""}`}
+                >
+                  {label}
+                </span>
+              </div>
             </Link>
           );
         })}

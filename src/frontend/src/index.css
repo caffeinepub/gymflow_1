@@ -20,39 +20,39 @@
 
 @layer base {
   :root {
-    --background: 0.12 0.003 220;
-    --foreground: 0.93 0.005 220;
-    --card: 0.17 0.004 220;
-    --card-foreground: 0.93 0.005 220;
-    --popover: 0.17 0.004 220;
-    --popover-foreground: 0.93 0.005 220;
-    --primary: 0.68 0.15 185;
-    --primary-foreground: 0.08 0.004 220;
-    --secondary: 0.22 0.006 220;
-    --secondary-foreground: 0.84 0.005 220;
-    --muted: 0.2 0.005 220;
-    --muted-foreground: 0.55 0.01 220;
-    --accent: 0.68 0.15 185;
-    --accent-foreground: 0.08 0.004 220;
-    --destructive: 0.58 0.22 27;
-    --destructive-foreground: 0.95 0.005 27;
-    --border: 0.25 0.007 220;
-    --input: 0.22 0.006 220;
-    --ring: 0.68 0.15 185;
+    --background: 0.08 0.01 255;
+    --foreground: 0.95 0.008 85;
+    --card: 0.12 0.012 255;
+    --card-foreground: 0.95 0.008 85;
+    --popover: 0.12 0.012 255;
+    --popover-foreground: 0.95 0.008 85;
+    --primary: 0.78 0.12 88;
+    --primary-foreground: 0.08 0.005 85;
+    --secondary: 0.16 0.01 255;
+    --secondary-foreground: 0.75 0.008 85;
+    --muted: 0.14 0.008 255;
+    --muted-foreground: 0.48 0.012 255;
+    --accent: 0.72 0.14 88;
+    --accent-foreground: 0.08 0.005 85;
+    --destructive: 0.55 0.22 25;
+    --destructive-foreground: 0.95 0.005 25;
+    --border: 0.2 0.012 255;
+    --input: 0.16 0.01 255;
+    --ring: 0.78 0.12 88;
     --radius: 0.75rem;
-    --chart-1: 0.68 0.15 185;
-    --chart-2: 0.6 0.12 185;
-    --chart-3: 0.5 0.09 185;
-    --chart-4: 0.75 0.13 195;
-    --chart-5: 0.58 0.22 27;
-    --sidebar: 0.14 0.003 220;
-    --sidebar-foreground: 0.93 0.005 220;
-    --sidebar-primary: 0.68 0.15 185;
-    --sidebar-primary-foreground: 0.08 0.004 220;
-    --sidebar-accent: 0.22 0.006 220;
-    --sidebar-accent-foreground: 0.84 0.005 220;
-    --sidebar-border: 0.25 0.007 220;
-    --sidebar-ring: 0.68 0.15 185;
+    --chart-1: 0.78 0.12 88;
+    --chart-2: 0.68 0.11 88;
+    --chart-3: 0.58 0.1 88;
+    --chart-4: 0.85 0.1 95;
+    --chart-5: 0.55 0.22 25;
+    --sidebar: 0.12 0.012 255;
+    --sidebar-foreground: 0.95 0.008 85;
+    --sidebar-primary: 0.78 0.12 88;
+    --sidebar-primary-foreground: 0.08 0.005 85;
+    --sidebar-accent: 0.16 0.01 255;
+    --sidebar-accent-foreground: 0.75 0.008 85;
+    --sidebar-border: 0.2 0.012 255;
+    --sidebar-ring: 0.78 0.12 88;
   }
 
   * {
@@ -73,8 +73,8 @@
   h6 {
     @apply font-display;
     font-variation-settings: "wdth" 125;
-    font-weight: 800;
-    letter-spacing: -0.02em;
+    font-weight: 900;
+    letter-spacing: -0.03em;
   }
 }
 
@@ -82,18 +82,24 @@
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
-  .pb-nav {
-    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  .pl-nav {
+    padding-left: 72px;
+  }
+  @media (min-width: 768px) {
+    .pl-nav {
+      padding-left: 200px;
+    }
   }
   .glow-primary {
-    box-shadow: 0 0 20px oklch(0.68 0.15 185 / 0.35);
+    box-shadow: 0 0 24px oklch(0.78 0.12 88 / 0.4), 0 0 48px
+      oklch(0.78 0.12 88 / 0.12);
   }
   .glow-accent {
-    box-shadow: 0 0 20px oklch(0.68 0.15 185 / 0.25);
+    box-shadow: 0 0 20px oklch(0.72 0.14 88 / 0.28);
   }
   .exercise-card-active {
-    border-color: oklch(0.68 0.15 185);
-    box-shadow: 0 0 0 1px oklch(0.68 0.15 185 / 0.4), 0 4px 24px
-      oklch(0.68 0.15 185 / 0.15);
+    border-color: oklch(0.78 0.12 88);
+    box-shadow: 0 0 0 1px oklch(0.78 0.12 88 / 0.35), 0 4px 24px
+      oklch(0.78 0.12 88 / 0.12);
   }
 }

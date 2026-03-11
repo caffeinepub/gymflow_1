@@ -7,6 +7,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useNavigate } from "@tanstack/react-router";
 import {
   ArrowLeft,
@@ -16,10 +23,11 @@ import {
   Loader2,
   Plus,
   Shuffle,
+  Timer,
   Trash2,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { ExerciseLog, WorkoutSession, WorkoutSet } from "../backend";
 import { useWorkoutContext } from "../contexts/WorkoutContext";
@@ -30,6 +38,16 @@ import { useLogWorkout } from "../hooks/useQueries";
 let _setIdCounter = 0;
 function newSetId() {
   return ++_setIdCounter;
+}
+
+function formatElapsed(seconds: number): string {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) {
+    return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  }
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
 interface SetEntry {
@@ -57,6 +75,19 @@ function getPrevSessionData(
   return null;
 }
 
+const MUSCLE_GROUPS = [
+  "Borst",
+  "Rug",
+  "Schouders",
+  "Biceps",
+  "Triceps",
+  "Benen",
+  "Billen",
+  "Core",
+  "Kuiten",
+  "Voorarmen",
+];
+
 export function ActiveWorkout() {
   const navigate = useNavigate();
   const { activeWorkout, clearWorkout } = useWorkoutContext();
@@ -75,6 +106,16 @@ export function ActiveWorkout() {
   const dayName = activeWorkout?.dayName ?? "Training";
   const dayLabel = activeWorkout?.dayLabel ?? "";
   const dayType = activeWorkout?.dayType ?? "kracht";
+
+  const startTimeRef = useRef<number>(Date.now());
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const [currentIdx, setCurrentIdx] = useState(0);
   const [workoutState, setWorkoutState] = useState<WorkoutState>(() => {
@@ -102,6 +143,7 @@ export function ActiveWorkout() {
   const [showAltDialog, setShowAltDialog] = useState(false);
   const [done, setDone] = useState(false);
   const [manualName, setManualName] = useState("");
+  const [manualMuscleGroup, setManualMuscleGroup] = useState("");
 
   const currentExercise = workoutState.activeExercises[currentIdx];
   const currentSets = workoutState.sets[currentIdx] ?? [];
@@ -176,9 +218,8 @@ export function ActiveWorkout() {
       id: Date.now(),
       name: trimmed,
       equipment: "Handmatig",
-      muscleGroup: "Handmatig",
+      muscleGroup: manualMuscleGroup || "Overig",
     };
-    // Persist to custom exercises list, deduplicate by name
     setCustomExercises((prev) => {
       const exists = prev.some(
         (e) => e.name.toLowerCase() === trimmed.toLowerCase(),
@@ -188,7 +229,8 @@ export function ActiveWorkout() {
     });
     swapExercise(newExercise);
     setManualName("");
-  }, [manualName, swapExercise, setCustomExercises]);
+    setManualMuscleGroup("");
+  }, [manualName, manualMuscleGroup, swapExercise, setCustomExercises]);
 
   async function finishWorkout() {
     const today = new Date().toISOString().split("T")[0];
@@ -285,9 +327,18 @@ export function ActiveWorkout() {
             Actieve Training
           </h2>
         </div>
-        <span className="text-sm font-semibold text-muted-foreground shrink-0">
-          {currentIdx + 1}/{exercises.length}
-        </span>
+        <div className="flex items-center gap-2 shrink-0">
+          <span
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-xs font-semibold tabular-nums"
+            data-ocid="workout.timer"
+          >
+            <Timer size={12} />
+            {formatElapsed(elapsed)}
+          </span>
+          <span className="text-sm font-semibold text-muted-foreground">
+            {currentIdx + 1}/{exercises.length}
+          </span>
+        </div>
       </div>
 
       <div className="h-1 bg-muted">
@@ -477,7 +528,10 @@ export function ActiveWorkout() {
         open={showAltDialog}
         onOpenChange={(open) => {
           setShowAltDialog(open);
-          if (!open) setManualName("");
+          if (!open) {
+            setManualName("");
+            setManualMuscleGroup("");
+          }
         }}
       >
         <DialogContent
@@ -526,7 +580,6 @@ export function ActiveWorkout() {
               </button>
             ))}
 
-            {/* Previously saved custom exercises */}
             {customExercises.length > 0 && (
               <div className="pt-2">
                 <div className="flex items-center gap-2 mb-2">
@@ -547,7 +600,7 @@ export function ActiveWorkout() {
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-foreground">{ex.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        Handmatig · Opgeslagen
+                        {ex.muscleGroup} · Opgeslagen
                       </p>
                     </div>
                     <Badge
@@ -561,7 +614,6 @@ export function ActiveWorkout() {
               </div>
             )}
 
-            {/* Manual input section */}
             <div className="pt-3">
               <div className="flex items-center gap-2 mb-3">
                 <div className="h-px flex-1 bg-border" />
@@ -570,7 +622,7 @@ export function ActiveWorkout() {
                 </span>
                 <div className="h-px flex-1 bg-border" />
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2">
                 <Input
                   type="text"
                   placeholder="Naam oefening..."
@@ -579,13 +631,31 @@ export function ActiveWorkout() {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") addManualExercise();
                   }}
-                  className="flex-1 bg-background border-border"
+                  className="bg-background border-border"
                   data-ocid="workout.input"
                 />
+                <Select
+                  value={manualMuscleGroup}
+                  onValueChange={setManualMuscleGroup}
+                >
+                  <SelectTrigger
+                    className="bg-background border-border"
+                    data-ocid="workout.select"
+                  >
+                    <SelectValue placeholder="Spiergroep..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MUSCLE_GROUPS.map((mg) => (
+                      <SelectItem key={mg} value={mg}>
+                        {mg}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Button
                   onClick={addManualExercise}
                   disabled={!manualName.trim()}
-                  className="shrink-0"
+                  className="w-full"
                   data-ocid="workout.save_button"
                 >
                   Toevoegen
@@ -599,6 +669,7 @@ export function ActiveWorkout() {
             onClick={() => {
               setShowAltDialog(false);
               setManualName("");
+              setManualMuscleGroup("");
             }}
             className="mt-1"
             data-ocid="workout.close_button"
